@@ -70,7 +70,14 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { title, deadline } = request.body;
   const {id} = request.params;
 
-  
+  const todo = user.todos.find((todo) => todo.id === id);
+
+  if(!todo){
+    return response.status(404).json({error: "Todo not found"})
+  }
+
+  todo.title = title;
+  todo.deadline = deadline;
 
   return response.status(201).send();
 });
@@ -80,7 +87,18 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request;
+  const { id } = request.params;
+
+  const todoDelete = user.todos.find((todo) => todo.id === id)
+
+  if(!todoDelete) {
+    return response.status(404).json({error: "Todo not found!"})
+  }
+
+  user.todos.splice(todoDelete, 1)
+
+  return response.status(201).send("Successfully deleted")
 });
 
 module.exports = app;
